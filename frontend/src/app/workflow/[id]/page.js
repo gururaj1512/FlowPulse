@@ -352,146 +352,76 @@ function AccordionStepCard({ step, index, role, isExpanded, onToggle, onRefetch 
 
 /* ── Tabular Execution Logs Component with Hover Popover ── */
 function ExecutionLogsTable({ runs, workflowId, router }) {
-  const [hoveredRunId, setHoveredRunId] = useState(null);
-
-  const activeRun = runs.find(r => r.id === hoveredRunId) || runs[0];
-
   return (
-    <div>
-      {/* Top Square Inspector Card — positioned cleanly above table */}
-      <div className={`execution-top-inspector-card ${activeRun ? 'active' : ''}`}>
-        {activeRun ? (
-          <div>
-            <div className="flex items-center justify-between mb-sm pb-xs" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="flex items-center gap-sm">
-                <span className={`status-badge status-${activeRun.status}`}>{activeRun.status}</span>
-                <span className="text-xs font-mono text-gold font-bold">ID: {activeRun.id}</span>
-                <span className="text-xs font-mono text-secondary uppercase">
-                  ({activeRun.trigger_type === 'webhook' ? '🔗 WEBHOOK TRIGGER' : '👆 MANUAL TRIGGER'})
-                </span>
-              </div>
-              <button 
-                className="btn btn-primary btn-sm"
-                onClick={() => router.push(`/workflow/${workflowId}/run/${activeRun.id}`)}
-                style={{ padding: '4px 14px', fontSize: '0.72rem' }}
+    <div className="execution-table-wrapper">
+      <table className="execution-table">
+        <thead>
+          <tr>
+            <th>STATUS</th>
+            <th>TRIGGER</th>
+            <th>START TIME</th>
+            <th>RUN ID</th>
+            <th>STEPS SUMMARY</th>
+            <th style={{ textAlign: 'right' }}>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          {runs.map(run => {
+            const completedCount = run.step_runs?.filter(s => s.status === 'completed').length || 0;
+            const totalSteps = run.step_runs?.length || 0;
+
+            return (
+              <tr 
+                key={run.id}
+                className="execution-row"
+                onClick={() => router.push(`/workflow/${workflowId}/run/${run.id}`)}
               >
-                OPEN LIVE RUN VIEWER ↗
-              </button>
-            </div>
-
-            <div className="text-xs font-mono text-muted mb-xs flex items-center justify-between">
-              <span>STEP BREAKDOWN INPSECTOR:</span>
-              <span>Triggered: {new Date(activeRun.created_at).toLocaleString()}</span>
-            </div>
-
-            <div className="flex gap-sm" style={{ flexWrap: 'wrap', marginTop: '10px' }}>
-              {activeRun.step_runs?.map((sr, i) => (
-                <div 
-                  key={sr.id} 
-                  className="flex items-center gap-xs p-xs"
-                  style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px', border: '1px solid var(--border-subtle)' }}
-                >
-                  <span className="text-xs font-mono text-muted">#{i + 1}</span>
-                  <span className="text-xs font-bold text-primary">{sr.workflow_step?.name}</span>
-                  <span className={`step-type-tag step-${sr.workflow_step?.type}`} style={{ fontSize: '0.62rem', padding: '1px 6px' }}>
-                    {sr.workflow_step?.type?.replace('_', ' ')}
+                <td>
+                  <span className={`status-badge status-${run.status}`}>{run.status}</span>
+                </td>
+                <td>
+                  <span className="text-xs font-mono uppercase text-secondary">
+                    {run.trigger_type === 'webhook' ? '🔗 WEBHOOK' : '👆 MANUAL'}
                   </span>
-                  <span className={`status-badge status-${sr.status}`} style={{ fontSize: '0.62rem', padding: '1px 6px' }}>
-                    {sr.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between" style={{ padding: '12px 0' }}>
-            <div className="flex items-center gap-md">
-              <span style={{ fontSize: '1.5rem' }}>🔍</span>
-              <div>
-                <h4 className="text-sm font-mono text-gold" style={{ fontWeight: 800 }}>
-                  EXECUTION LOG DETAILS INSPECTOR
-                </h4>
-                <p className="text-xs text-muted">
-                  Hover over any row in the log table below to inspect step execution statuses & timing.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Clean Tabular Data Table (Zero Popup Collisions) */}
-      <div className="execution-table-wrapper">
-        <table className="execution-table">
-          <thead>
-            <tr>
-              <th>STATUS</th>
-              <th>TRIGGER</th>
-              <th>START TIME</th>
-              <th>RUN ID</th>
-              <th>STEPS SUMMARY</th>
-              <th style={{ textAlign: 'right' }}>ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {runs.map(run => {
-              const completedCount = run.step_runs?.filter(s => s.status === 'completed').length || 0;
-              const totalSteps = run.step_runs?.length || 0;
-
-              return (
-                <tr 
-                  key={run.id}
-                  className="execution-row"
-                  onMouseEnter={() => setHoveredRunId(run.id)}
-                  onClick={() => router.push(`/workflow/${workflowId}/run/${run.id}`)}
-                >
-                  <td>
-                    <span className={`status-badge status-${run.status}`}>{run.status}</span>
-                  </td>
-                  <td>
-                    <span className="text-xs font-mono uppercase text-secondary">
-                      {run.trigger_type === 'webhook' ? '🔗 WEBHOOK' : '👆 MANUAL'}
+                </td>
+                <td className="font-mono text-xs text-secondary">
+                  {new Date(run.created_at).toLocaleTimeString()}
+                </td>
+                <td className="font-mono text-xs text-gold">
+                  {run.id.substring(0, 8)}...
+                </td>
+                <td>
+                  <div className="flex items-center gap-xs">
+                    <span className="text-xs font-mono text-primary font-bold">
+                      {completedCount}/{totalSteps}
                     </span>
-                  </td>
-                  <td className="font-mono text-xs text-secondary">
-                    {new Date(run.created_at).toLocaleTimeString()}
-                  </td>
-                  <td className="font-mono text-xs text-gold">
-                    {run.id.substring(0, 8)}...
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-xs">
-                      <span className="text-xs font-mono text-primary font-bold">
-                        {completedCount}/{totalSteps}
-                      </span>
-                      <div className="flex gap-xs" style={{ marginLeft: '6px' }}>
-                        {run.step_runs?.map(sr => (
-                          <span 
-                            key={sr.id}
-                            style={{
-                              width: '8px', height: '8px', borderRadius: '50%',
-                              background: sr.status === 'completed' ? 'var(--status-completed)' :
-                                          sr.status === 'paused' ? 'var(--status-paused)' :
-                                          sr.status === 'running' ? 'var(--status-running)' :
-                                          sr.status === 'failed' ? 'var(--status-failed)' : 'var(--status-pending)'
-                            }}
-                            title={`${sr.workflow_step?.name}: ${sr.status}`}
-                          />
-                        ))}
-                      </div>
+                    <div className="flex gap-xs" style={{ marginLeft: '6px' }}>
+                      {run.step_runs?.map(sr => (
+                        <span 
+                          key={sr.id}
+                          style={{
+                            width: '8px', height: '8px', borderRadius: '50%',
+                            background: sr.status === 'completed' ? 'var(--status-completed)' :
+                                        sr.status === 'paused' ? 'var(--status-paused)' :
+                                        sr.status === 'running' ? 'var(--status-running)' :
+                                        sr.status === 'failed' ? 'var(--status-failed)' : 'var(--status-pending)'
+                          }}
+                          title={`${sr.workflow_step?.name}: ${sr.status}`}
+                        />
+                      ))}
                     </div>
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button className="btn btn-secondary btn-sm" style={{ padding: '4px 12px' }}>
-                      VIEW RUN ↗
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  <button className="btn btn-secondary btn-sm" style={{ padding: '4px 14px', fontSize: '0.75rem' }}>
+                    Click for more details ↗
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
