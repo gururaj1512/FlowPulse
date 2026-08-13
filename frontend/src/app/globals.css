@@ -493,17 +493,27 @@ h1, h2, h3, h4, h5, h6, .display-title, .section-heading {
 .status-skipped::before { background: var(--status-skipped); }
 
 /* ── Step Type Tags ───────────────────────────────────── */
+.workflow-steps-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 16px 0;
+}
+
 .step-type-tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.64rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .step-llm_call { color: var(--step-llm); background: rgba(192, 132, 252, 0.12); border: 1px solid rgba(192, 132, 252, 0.3); }

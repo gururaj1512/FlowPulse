@@ -239,11 +239,25 @@ function WorkflowCard({ workflow, role, orgId, onRefetch }) {
         )}
 
         <div className="workflow-steps-preview">
-          {workflow.workflow_steps.map(step => (
-            <span key={step.id} className={`step-type-tag step-${step.type}`}>
-              {step.type.replace('_', ' ')}
-            </span>
-          ))}
+          {workflow.workflow_steps.map((step, idx) => {
+            const stepIcons = {
+              http_request: '🌐',
+              llm_call: '🤖',
+              conditional_branch: '🔀',
+              approval_gate: '⏳',
+              notify: '🔔',
+              db_write: '💾'
+            };
+            const icon = stepIcons[step.type] || '⚡';
+
+            return (
+              <span key={step.id} className={`step-type-tag step-${step.type}`}>
+                <span style={{ opacity: 0.6, fontSize: '0.6rem' }}>#{idx + 1}</span>
+                <span>{icon}</span>
+                <span>{step.type.replace('_', ' ')}</span>
+              </span>
+            );
+          })}
         </div>
       </div>
 

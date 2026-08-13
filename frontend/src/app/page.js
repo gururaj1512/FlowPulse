@@ -148,27 +148,50 @@ function LoginForm() {
 
       {/* Demo Credentials Helper Cards */}
       <div style={{ 
-        marginTop: '32px', padding: '16px', 
+        marginTop: '28px', padding: '16px', 
         background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
         border: '1px solid var(--border-primary)'
       }}>
         <div className="flex items-center justify-between mb-sm">
-          <span className="text-xs font-mono text-gold" style={{ fontWeight: 800 }}>DEMO CREDENTIALS</span>
+          <span className="text-xs font-mono text-gold" style={{ fontWeight: 800 }}>⚡ DEMO WORKSPACE CREDENTIALS</span>
           <span className="text-xs text-muted font-mono">Password: password123</span>
         </div>
 
-        <div className="flex flex-col gap-xs text-xs" style={{ marginTop: '10px' }}>
-          <div className="flex items-center justify-between p-sm" style={{ background: 'var(--bg-primary)', borderRadius: '4px' }}>
-            <span><strong>Acme Corp (Org A):</strong> owner_a@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.7rem' }} onClick={() => handleQuickLogin('owner_a@demo.com')}>Fill</button>
+        {/* Org A Users */}
+        <div className="text-xs font-mono text-secondary mb-xs mt-xs" style={{ fontWeight: 700 }}>
+          ORG A (ACME CORP):
+        </div>
+        <div className="flex flex-col gap-xs text-xs mb-sm">
+          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
+            <span><strong style={{ color: 'var(--accent-gold)' }}>[Owner]:</strong> owner_a@demo.com</span>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('owner_a@demo.com')}>FILL</button>
           </div>
-          <div className="flex items-center justify-between p-sm" style={{ background: 'var(--bg-primary)', borderRadius: '4px' }}>
-            <span><strong>Beta Inc (Org B):</strong> owner_b@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.7rem' }} onClick={() => handleQuickLogin('owner_b@demo.com')}>Fill</button>
+          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
+            <span><strong style={{ color: '#818cf8' }}>[Editor]:</strong> editor_a@demo.com</span>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('editor_a@demo.com')}>FILL</button>
           </div>
-          <div className="flex items-center justify-between p-sm" style={{ background: 'var(--bg-primary)', borderRadius: '4px' }}>
-            <span><strong>Viewer (Org B):</strong> viewer_b@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.7rem' }} onClick={() => handleQuickLogin('viewer_b@demo.com')}>Fill</button>
+          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
+            <span><strong style={{ color: 'var(--text-muted)' }}>[Viewer]:</strong> viewer_a@demo.com</span>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('viewer_a@demo.com')}>FILL</button>
+          </div>
+        </div>
+
+        {/* Org B Users */}
+        <div className="text-xs font-mono text-secondary mb-xs" style={{ fontWeight: 700 }}>
+          ORG B (BETA INC):
+        </div>
+        <div className="flex flex-col gap-xs text-xs">
+          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
+            <span><strong style={{ color: 'var(--accent-gold)' }}>[Owner]:</strong> owner_b@demo.com</span>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('owner_b@demo.com')}>FILL</button>
+          </div>
+          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
+            <span><strong style={{ color: '#818cf8' }}>[Editor]:</strong> editor_b@demo.com</span>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('editor_b@demo.com')}>FILL</button>
+          </div>
+          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
+            <span><strong style={{ color: 'var(--text-muted)' }}>[Viewer]:</strong> viewer_b@demo.com</span>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('viewer_b@demo.com')}>FILL</button>
           </div>
         </div>
       </div>
