@@ -1,0 +1,35 @@
+actions:
+  - name: approveStep
+    definition:
+      kind: synchronous
+      handler: '{{NHOST_FUNCTIONS_URL}}/approve-step'
+      forward_client_headers: true
+    permissions:
+      - role: user
+    comment: Approves a paused approval_gate step. Checks approver role in handler code (Layer 2).
+  - name: triggerWorkflowRun
+    definition:
+      kind: synchronous
+      handler: '{{NHOST_FUNCTIONS_URL}}/trigger-workflow-run'
+      forward_client_headers: true
+    permissions:
+      - role: user
+    comment: Starts a workflow run. Enforces org membership, quota, and step-level permissions in handler code.
+  - name: webhookTrigger
+    definition:
+      kind: synchronous
+      handler: '{{NHOST_FUNCTIONS_URL}}/webhook-trigger'
+    permissions:
+      - role: user
+    comment: Inbound webhook endpoint for external systems to trigger workflow runs.
+custom_types:
+  enums: []
+  input_objects:
+    - name: TriggerWorkflowRunInput
+    - name: ApproveStepInput
+    - name: WebhookTriggerInput
+  objects:
+    - name: TriggerWorkflowRunOutput
+    - name: ApproveStepOutput
+    - name: WebhookTriggerOutput
+  scalars: []

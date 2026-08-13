@@ -1,0 +1,17 @@
+table:
+  name: org_monthly_usage
+  schema: public
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - org_id
+        - org_name
+        - quota_limit
+        - quota_used
+        - quota_reset_at
+        - runs_this_month
+        - avg_run_duration_seconds
+      filter:
+        org_id:
+          _in: X-Hasura-User-Id
