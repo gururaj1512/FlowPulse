@@ -6,28 +6,28 @@ A multi-tenant workflow automation platform built on **nhost** (Postgres + Hasur
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   Next.js Frontend                       │
+│                   Next.js Frontend                      │
 │   (React + Apollo Client + nhost Auth + Subscriptions)  │
 └─────────────┬───────────────────────────┬───────────────┘
-              │ queries/mutations          │ subscriptions (WSS)
-              ▼                            ▼
+              │ queries/mutations         │ subscriptions (WSS)
+              ▼                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│                 Hasura GraphQL Engine                     │
+│                 Hasura GraphQL Engine                   │
 │    ┌──────────────────────┐  ┌────────────────────┐     │
 │    │ Layer 1 Permissions  │  │  Actions (→ Funcs) │     │
 │    │ (org-scoped RLS)     │  │  Event Triggers    │     │
 │    └──────────────────────┘  └────────────────────┘     │
 └─────────────┬───────────────────────────┬───────────────┘
-              │                            │
-              ▼                            ▼
+              │                           │
+              ▼                           ▼
 ┌──────────────────────┐    ┌──────────────────────────────┐
-│     PostgreSQL       │    │    nhost Serverless Functions │
+│     PostgreSQL       │    │   nhost Serverless Functions │
 │  (9 tables + view)   │    │  ┌─ trigger-workflow-run.js  │
 │                      │    │  ├─ approve-step.js          │
 │                      │    │  ├─ webhook-trigger.js       │
-│                      │    │  └─ _utils/ (shared code)    │
+│                      │    │  └─ utils/ (shared code)     │
 └──────────────────────┘    │        │                     │
-                            │        ├─→ Groq API (LLM)   │
+                            │        ├─→ Groq API (LLM)    │
                             │        ├─→ Open-Meteo (HTTP) │
                             │        └─→ ntfy.sh (Notify)  │
                             └──────────────────────────────┘
