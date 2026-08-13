@@ -775,9 +775,22 @@ h1, h2, h3, h4, h5, h6, .display-title, .section-heading {
 
 .login-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 920px;
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-lg);
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .login-title {

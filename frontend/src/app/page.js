@@ -74,124 +74,134 @@ function LoginForm() {
 
   return (
     <div className="glass-card login-card animate-fade-in" style={{ padding: '36px' }}>
-      <div className="login-title">
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-          <div className="navbar-brand-icon" style={{ width: '48px', height: '48px', fontSize: '1.6rem' }}>
-            ⚡
+      <div className="login-grid">
+        {/* Left Column — Login Form */}
+        <div>
+          <div className="login-title" style={{ textAlign: 'left' }}>
+            <div className="flex items-center gap-md mb-sm">
+              <div className="navbar-brand-icon" style={{ width: '42px', height: '42px', fontSize: '1.4rem' }}>
+                ⚡
+              </div>
+              <div>
+                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>FLOWPULSE</h1>
+                <p className="text-secondary text-xs font-mono" style={{ marginTop: '2px' }}>
+                  Enterprise Multi-Tenant Platform
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-        <h1>FLOWPULSE</h1>
-        <p className="text-secondary text-sm">Enterprise Multi-Tenant Workflow Platform</p>
-      </div>
 
-      {error && (
-        <div className="login-error">
-          ⚠️ {error.message || 'Authentication failed. Please check credentials.'}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label" htmlFor="email">EMAIL ADDRESS</label>
-          <input
-            id="email"
-            type="email"
-            className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="owner_a@demo.com"
-            required
-            autoComplete="email"
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label" htmlFor="password">PASSWORD</label>
-          <input
-            id="password"
-            type="password"
-            className="form-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••••••"
-            required
-            autoComplete="current-password"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="btn btn-primary w-full"
-          disabled={isLoading}
-          style={{ marginTop: '8px', padding: '12px' }}
-        >
-          {isLoading ? (
-            <><div className="spinner" /> PROCESSING...</>
-          ) : (
-            isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN TO WORKSPACE'
+          {error && (
+            <div className="login-error">
+              ⚠️ {error.message || 'Authentication failed. Please check credentials.'}
+            </div>
           )}
-        </button>
-      </form>
 
-      <div style={{ textAlign: 'center', marginTop: '24px' }}>
-        <button
-          className="text-xs font-mono"
-          onClick={() => setIsSignUp(!isSignUp)}
-          style={{ 
-            background: 'none', border: 'none', color: 'var(--text-accent)', 
-            cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' 
-          }}
-        >
-          {isSignUp ? 'Already have an account? Sign In' : "Need a new workspace? Sign Up"}
-        </button>
-      </div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">EMAIL ADDRESS</label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="owner_a@demo.com"
+                required
+                autoComplete="email"
+              />
+            </div>
 
-      {/* Demo Credentials Helper Cards */}
-      <div style={{ 
-        marginTop: '28px', padding: '16px', 
-        background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--border-primary)'
-      }}>
-        <div className="flex items-center justify-between mb-sm">
-          <span className="text-xs font-mono text-gold" style={{ fontWeight: 800 }}>⚡ DEMO WORKSPACE CREDENTIALS</span>
-          <span className="text-xs text-muted font-mono">Password: password123</span>
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">PASSWORD</label>
+              <input
+                id="password"
+                type="password"
+                className="form-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isLoading}
+              style={{ marginTop: '12px', padding: '12px' }}
+            >
+              {isLoading ? (
+                <><div className="spinner" /> PROCESSING...</>
+              ) : (
+                isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN TO WORKSPACE'
+              )}
+            </button>
+          </form>
+
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <button
+              className="text-xs font-mono"
+              onClick={() => setIsSignUp(!isSignUp)}
+              style={{ 
+                background: 'none', border: 'none', color: 'var(--text-accent)', 
+                cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' 
+              }}
+            >
+              {isSignUp ? 'Already have an account? Sign In' : "Need a new workspace? Sign Up"}
+            </button>
+          </div>
         </div>
 
-        {/* Org A Users */}
-        <div className="text-xs font-mono text-secondary mb-xs mt-xs" style={{ fontWeight: 700 }}>
-          ORG A (ACME CORP):
-        </div>
-        <div className="flex flex-col gap-xs text-xs mb-sm">
-          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
-            <span><strong style={{ color: 'var(--accent-gold)' }}>[Owner]:</strong> owner_a@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('owner_a@demo.com')}>FILL</button>
+        {/* Right Column — Demo Workspace Credentials */}
+        <div style={{ 
+          padding: '20px', 
+          background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--border-primary)',
+          height: '100%'
+        }}>
+          <div className="flex items-center justify-between mb-md pb-xs" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+            <span className="text-xs font-mono text-gold" style={{ fontWeight: 800 }}>⚡ DEMO CREDENTIALS</span>
+            <span className="text-xs text-muted font-mono">Password: password123</span>
           </div>
-          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
-            <span><strong style={{ color: '#818cf8' }}>[Editor]:</strong> editor_a@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('editor_a@demo.com')}>FILL</button>
-          </div>
-          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
-            <span><strong style={{ color: 'var(--text-muted)' }}>[Viewer]:</strong> viewer_a@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('viewer_a@demo.com')}>FILL</button>
-          </div>
-        </div>
 
-        {/* Org B Users */}
-        <div className="text-xs font-mono text-secondary mb-xs" style={{ fontWeight: 700 }}>
-          ORG B (BETA INC):
-        </div>
-        <div className="flex flex-col gap-xs text-xs">
-          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
-            <span><strong style={{ color: 'var(--accent-gold)' }}>[Owner]:</strong> owner_b@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('owner_b@demo.com')}>FILL</button>
+          {/* Org A Users */}
+          <div className="text-xs font-mono text-secondary mb-xs" style={{ fontWeight: 700 }}>
+            ORG A (ACME CORP):
           </div>
-          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
-            <span><strong style={{ color: '#818cf8' }}>[Editor]:</strong> editor_b@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('editor_b@demo.com')}>FILL</button>
+          <div className="flex flex-col gap-xs text-xs mb-md">
+            <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px' }}>
+              <span><strong style={{ color: 'var(--accent-gold)' }}>[Owner]:</strong> owner_a@demo.com</span>
+              <button className="btn btn-secondary btn-sm" style={{ padding: '2px 10px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('owner_a@demo.com')}>FILL</button>
+            </div>
+            <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px' }}>
+              <span><strong style={{ color: '#818cf8' }}>[Editor]:</strong> editor_a@demo.com</span>
+              <button className="btn btn-secondary btn-sm" style={{ padding: '2px 10px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('editor_a@demo.com')}>FILL</button>
+            </div>
+            <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px' }}>
+              <span><strong style={{ color: 'var(--text-muted)' }}>[Viewer]:</strong> viewer_a@demo.com</span>
+              <button className="btn btn-secondary btn-sm" style={{ padding: '2px 10px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('viewer_a@demo.com')}>FILL</button>
+            </div>
           </div>
-          <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '4px', padding: '5px 10px' }}>
-            <span><strong style={{ color: 'var(--text-muted)' }}>[Viewer]:</strong> viewer_b@demo.com</span>
-            <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('viewer_b@demo.com')}>FILL</button>
+
+          {/* Org B Users */}
+          <div className="text-xs font-mono text-secondary mb-xs" style={{ fontWeight: 700 }}>
+            ORG B (BETA INC):
+          </div>
+          <div className="flex flex-col gap-xs text-xs">
+            <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px' }}>
+              <span><strong style={{ color: 'var(--accent-gold)' }}>[Owner]:</strong> owner_b@demo.com</span>
+              <button className="btn btn-secondary btn-sm" style={{ padding: '2px 10px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('owner_b@demo.com')}>FILL</button>
+            </div>
+            <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px' }}>
+              <span><strong style={{ color: '#818cf8' }}>[Editor]:</strong> editor_b@demo.com</span>
+              <button className="btn btn-secondary btn-sm" style={{ padding: '2px 10px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('editor_b@demo.com')}>FILL</button>
+            </div>
+            <div className="flex items-center justify-between p-xs" style={{ background: 'var(--bg-primary)', borderRadius: '6px', padding: '6px 12px' }}>
+              <span><strong style={{ color: 'var(--text-muted)' }}>[Viewer]:</strong> viewer_b@demo.com</span>
+              <button className="btn btn-secondary btn-sm" style={{ padding: '2px 10px', fontSize: '0.68rem' }} onClick={() => handleQuickLogin('viewer_b@demo.com')}>FILL</button>
+            </div>
           </div>
         </div>
       </div>
