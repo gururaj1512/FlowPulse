@@ -1222,32 +1222,21 @@ h1, h2, h3, h4, h5, h6, .display-title, .section-heading {
   border-bottom: none;
 }
 
-/* Hover Card Popover */
-.execution-popover-card {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: calc(100% + 4px);
-  background: #0f172a;
-  border: 1px solid var(--accent-gold);
+/* Top Square Inspector Details Card */
+.execution-top-inspector-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), var(--shadow-gold);
-  z-index: 500;
-  pointer-events: none;
-  animation: fadeIn 150ms ease-out;
+  margin-bottom: var(--space-lg);
+  transition: all var(--transition-fast);
+  min-height: 140px;
 }
 
-.execution-popover-card::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 40px;
-  width: 10px;
-  height: 10px;
+.execution-top-inspector-card.active {
+  border-color: var(--accent-gold);
+  box-shadow: var(--shadow-gold);
   background: #0f172a;
-  border-left: 1px solid var(--accent-gold);
-  border-top: 1px solid var(--accent-gold);
-  transform: rotate(45deg);
 }
+
 

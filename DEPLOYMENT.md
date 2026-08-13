@@ -57,9 +57,9 @@ In the Nhost Dashboard, navigate to **Settings → Environment Variables** and c
 After deploying the database schema to cloud, populate demo workspace users:
 
 ```bash
-NHOST_AUTH_URL=https://<subdomain>.auth.<region>.nhost.run/v1/auth \
-NHOST_GRAPHQL_URL=https://<subdomain>.graphql.<region>.nhost.run/v1/graphql \
-HASURA_GRAPHQL_ADMIN_SECRET=<your-admin-secret> \
+NHOST_AUTH_URL=https://xiruuojpscirkcviwgcy.auth.ap-south-1.nhost.run/v1 \
+NHOST_GRAPHQL_URL=https://xiruuojpscirkcviwgcy.graphql.ap-south-1.nhost.run/v1 \
+HASURA_GRAPHQL_ADMIN_SECRET=<your-hasura-admin-secret> \
 node functions/seed-users.js
 ```
 
