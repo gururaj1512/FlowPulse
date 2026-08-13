@@ -4,55 +4,72 @@ WRITEUP — Engineering Approach, Schema Decisions & Architecture
 
 1. SCHEMA REASONING & REAL-WORLD DESIGN CHOICES
 
-When I started designing the data model for FlowPulse, my biggest goal was making sure multi-tenant isolation was bulletproof at the database level while keeping queries fast and flexible.
+When I started designing the data model for FlowPulse my biggest goal was making sure that multi-tenant isolation was very secure at the database level while keeping queries fast and flexible.
 
 Here is how I structured the schema and why:
 
 - Tenant Hierarchy (organizations -> org_members -> workflows -> steps/runs):
-  Everything in the system belongs directly or indirectly to an organization. I created `organizations` as the top-level tenant container and `org_members` as a junction table connecting Nhost auth users with organization roles ('owner', 'editor', 'viewer').
+
+Everything in the FlowPulse system belongs directly or indirectly to an organization. I created organizations as the top-level tenant container and org_members as a junction table connecting Nhost auth users with organization roles like owner, editor and viewer.
 
 - Denormalizing org_id onto workflow_runs:
-  Relational theory says workflow_runs should only link to workflow_id, and we should query the organization through the workflow table. But in a real-time multi-tenant app, Hasura evaluates permission checks on EVERY query. If every execution check requires joining workflow_runs -> workflows -> organizations -> org_members, query performance degrades fast. I intentionally denormalized `org_id` onto `workflow_runs` so Hasura can verify tenant ownership in a single direct column check without joins.
+
+Normally workflow_runs should only link to workflow_id. We should query the organization through the workflow table.. In a real-time multi-tenant app like FlowPulse Hasura evaluates permission checks on every query. If every execution check requires joining workflow_runs -> workflows -> organizations -> org_members query performance gets slow. So I intentionally denormalized org_id onto workflow_runs so Hasura can verify tenant ownership in a direct column check without joins.
 
 - Flexible JSONB Step Configurations:
-  Workflow steps have completely different parameter shapes. An HTTP step needs a URL and method; an LLM step needs a prompt template and model name; a conditional branch needs an expression. Instead of creating messy sparse columns or separate tables for every step type, I used JSONB for `config`. This lets us add new step types anytime without modifying database schemas.
+
+Workflow steps have completely different parameter shapes. For example an HTTP step needs a URL and method while an LLM step needs a template and model name and a conditional branch needs an expression. Of creating messy sparse columns or separate tables for every step type I used JSONB for config. This lets us add step types anytime without modifying database schemas.
 
 - Tracking Step Executions Separately:
-  I separated `workflow_steps` (the static blueprint) from `step_runs` (the runtime execution instance). This allows a single workflow definition to be executed hundreds of times while tracking attempt counts, step outputs, latency, and individual step statuses cleanly.
 
+I separated workflow_steps (the static blueprint) from step_runs (the runtime execution instance). This allows a single workflow definition to be executed hundreds of times while tracking attempt counts, step outputs, latency and individual step statuses cleanly.
 
 2. HOW I TACKLED THE TWO PERMISSION LAYERS
 
-One challenge I had to solve was that database-level permissions alone aren't enough for complex workflow platforms. I implemented two distinct permission layers working together:
+One challenge I had to solve was that database-level permissions alone are not enough for workflow platforms like FlowPulse. I implemented two distinct permission layers working together:
 
 Layer 1: Database Row-Level Security (Hasura RLS)
-I configured Hasura's permission rules across all tables using session variables (X-Hasura-User-Id). When a user queries workflows or runs, Hasura automatically injects a SQL WHERE clause checking if the requesting user exists in that organization's `org_members` table.
-- What this achieves: It completely prevents cross-tenant data leaks. If a user in Org B tries to fetch a workflow ID from Org A, Hasura returns null at the database level.
-- Why this isn't enough by itself: Hasura RLS is great for row access ("Can user X see row Y?"), but it cannot evaluate dynamic business logic like "Can user X run a workflow if it contains a db_write step?" or "Has this organization exceeded its monthly run quota?"
+
+I configured Hasuras permission rules across all tables using session variables (X-Hasura-User-Id). When a user queries workflows or runs Hasura automatically injects a SQL WHERE clause checking if the requesting user exists in that organizations org_members table.
+
+- What this achieves: It completely prevents -tenant data leaks. If a user in Org B tries to fetch a workflow ID from Org A, Hasura returns null at the database level.
+
+- Why this is not enough by itself: Hasura RLS is great for row access ("Can user X see row Y?") but it cannot evaluate business logic like "Can user X run a workflow if it contains a db_write step?" or "Has this organization exceeded its monthly run quota for FlowPulse?"
 
 Layer 2: Application Authorization in Serverless Functions
-To handle dynamic privileges and action safety, I built a custom authorization utility inside the serverless functions (`functions/_utils/auth.js`).
-- Role Privileges: Viewers can view workflows and logs, but if a viewer tries to trigger a workflow execution or approve a gate, my function code intercepts the request, checks their role in `org_members`, and rejects it with a 403 Forbidden error.
-- Sensitive Step Protection: Running steps like `db_write` or `notify` requires owner privileges. My execution engine inspects the workflow steps before running and blocks non-owners from triggering sensitive operations.
-- Quota Management: Before executing a run, the function checks `org.quota_used < org.quota_limit`. If quota is exhausted, execution is blocked immediately with a quota error.
 
+To handle dynamic privileges and action safety I built a custom authorization utility inside the serverless functions (functions/_utils/auth.js).
+
+- Role Privileges: Viewers can view workflows and logs but if a viewer tries to trigger a workflow execution or approve a gate my function code intercepts the request checks their role in org_members and rejects it with a 403 error for FlowPulse.
+
+- Sensitive Step Protection: Running steps like db_write or notify requires owner privileges for FlowPulse. My execution engine inspects the workflow steps before running and blocks non-owners from triggering operations.
+
+- Quota Management: Before executing a run the function checks org.quota_used < org.quota_limit for FlowPulse. If quota is exhausted execution is blocked immediately with a quota error.
 
 3. HOW I IMPLEMENTED THE APPROVAL-GATE PAUSE & RESUME ENGINE
 
-Building the approval gate was one of the most interesting challenges because standard serverless functions are stateless and cannot stay alive waiting for human input.
+Building the approval gate was one of the interesting challenges because standard serverless functions are stateless and cannot stay alive waiting for human input for FlowPulse.
 
 I solved this by designing a two-phase execution engine:
 
-Phase 1 — Automatic Pause:
-1. When a workflow execution starts, my engine iterates through steps sequentially.
-2. When it encounters a step configured as `type: "approval_gate"`, the step executor marks `step_run.status = "paused"` and `workflow_run.status = "paused"`.
-3. The engine saves all step outputs produced up to that point into the database and exits the execution loop cleanly without throwing an error.
-4. Because the frontend uses GraphQL subscriptions (`useSubscription`), the status change streams in real-time, instantly displaying the "APPROVAL REQUIRED" banner and "Approve & Continue" button on the UI for owners and editors.
+Phase 1. Pause:
 
-Phase 2 — Secure Resume:
-1. When an authorized user (owner or editor) clicks "Approve", the frontend calls the `approveStep` Hasura Action.
-2. The serverless function (`functions/approve-step.js`) verifies that the step is currently paused, checks Layer 2 permissions, and records `approved_by` (user ID) and `approved_at` (timestamp).
-3. The function updates `step_run.status = "completed"` and `workflow_run.status = "running"`.
-4. It then resumes the execution loop right from the next step index using the stored context from previous steps.
+1. When a workflow execution starts my engine iterates through steps for FlowPulse.
 
-This design keeps serverless functions lightweight, avoids long-running function timeouts, maintains a clear audit trail of who approved what, and provides a real-time reactive experience for users.
+2. When it encounters a step configured as type: "approval_gate" the step executor marks step_run.status = "paused". Workflow_run.status = "paused".
+
+3. The engine saves all step outputs produced up to that point into the database and exits the execution loop without throwing an error for FlowPulse.
+
+4. Because the frontend uses GraphQL subscriptions (useSubscription) the status change streams in time instantly displaying the "APPROVAL REQUIRED" banner and "Approve & Continue" button on the UI for owners and editors of FlowPulse.
+
+Phase 2. Secure Resume:
+
+1. When an authorized user (owner or editor) clicks "Approve" the frontend calls the approveStep Hasura Action for FlowPulse.
+
+2. The serverless function (functions/approve-step.js) verifies that the step is currently paused checks Layer 2 permissions and records approved_by (user ID). Approved_at (timestamp) for FlowPulse.
+
+3. The function updates step_run.status = "completed" and workflow_run.status = "running".
+
+4. It then resumes the execution loop from the next step index using the stored context from previous steps for FlowPulse.
+
+This design keeps serverless functions lightweight avoids running function timeouts maintains a clear audit trail of who approved what and provides a real-time reactive experience, for FlowPulse users.
