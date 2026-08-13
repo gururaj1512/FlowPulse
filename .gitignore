@@ -1,0 +1,55 @@
+# ── nhost local development ──
+.nhost/
+.secrets
+.secrets.local
+.secrets.*.local
+
+# ── Dependencies (Monorepo Node Modules) ──
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ── Environment Secrets & Credentials ──
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.local
+
+# ── Next.js Build Outputs & Cache ──
+frontend/.next/
+frontend/out/
+frontend/build/
+.vercel/
+*.tsbuildinfo
+
+# ── Logs & Debugging ──
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── IDE & Editor Settings ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# ── Operating System Metadata ──
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
